@@ -9,7 +9,6 @@ func main() {
 }
 
 func run() error {
-
 	fmt.Println("Hi!")
 
 	return nil

@@ -64,3 +64,4 @@ go.work.sum
 /Dockerfile.debug
 /Dockerfile.debug-test
 /docker-compose.yml
+/requests.http

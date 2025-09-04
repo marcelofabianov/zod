@@ -9,10 +9,14 @@ RUN addgroup -g ${HOST_GID} -S appgroup && \
 RUN mkdir -p /app && chown -R appuser:appgroup /app
 WORKDIR /app
 
+# Instalação de todas as ferramentas de desenvolvimento em uma única camada.
 RUN apk add --no-cache bash curl git unzip && \
+  go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest && \
   go install github.com/pressly/goose/v3/cmd/goose@latest && \
   go install github.com/air-verse/air@latest && \
-  go install github.com/smartystreets/goconvey@latest
+  go install github.com/smartystreets/goconvey@latest && \
+  go install github.com/securego/gosec/v2/cmd/gosec@latest && \
+  go install mvdan.cc/gofumpt@latest
 
 ENV PATH=$PATH:/go/bin
 
