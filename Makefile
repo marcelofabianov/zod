@@ -113,7 +113,7 @@ lint: ## Executa o linter (golangci-lint) dentro do contêiner
 
 go-mod-tidy: ## Organiza as dependências do projeto (go mod tidy)
 	@echo "📦  Organizando dependências do Go..."
-	@docker compose exec $(SERVICE_NAME) go mod tidy
+	@docker compose run --rm -v .:/app:z $(SERVICE_NAME) go mod tidy
 
 sec-check: ## Executa a análise de vulnerabilidades de segurança (gosec).
 	@echo "🔐  Verificando vulnerabilidades de segurança..."

@@ -14,6 +14,7 @@ import (
 	"github.com/joho/godotenv"
 
 	"github.com/marcelofabianov/zod/config"
+	"github.com/marcelofabianov/zod/pkg/cache"
 	"github.com/marcelofabianov/zod/pkg/database"
 	"github.com/marcelofabianov/zod/pkg/logger"
 	"github.com/marcelofabianov/zod/pkg/web"
@@ -45,6 +46,12 @@ func run() error {
 		return fmt.Errorf("failed to connect to database: %w", err)
 	}
 	defer db.Close()
+
+	redisClient, err := cache.NewRedisConnection(cfg.Redis, log)
+	if err != nil {
+		return fmt.Errorf("failed to connect to redis: %w", err)
+	}
+	defer redisClient.Close()
 
 	log.Info("application starting", "env", cfg.General.Env)
 

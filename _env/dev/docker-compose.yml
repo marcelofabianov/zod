@@ -18,8 +18,7 @@ services:
       - zod-network
     working_dir: /app
     volumes:
-      - .:/app:ro,z
-      - ./tmp:/app/tmp
+      - .:/app
     depends_on:
       zod-db:
         condition: service_healthy
