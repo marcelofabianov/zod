@@ -1,0 +1,32 @@
+name: "zod-debug"
+
+services:
+  zod-api-debug:
+    container_name: zod-api-debug
+    build:
+      context: .
+      dockerfile: Dockerfile.debug
+    env_file:
+      - .env
+    ports:
+      - "${APP_API_PORT:-8080}:${APP_API_PORT:-8080}"
+      - "2345:2345"
+    networks:
+      - zod-network
+    working_dir: /app
+    volumes:
+      - .:/app:cached
+    security_opt:
+      - "seccomp:unconfined"
+    command:
+      - "dlv"
+      - "exec"
+      - "/bin/main"
+      - "--headless"
+      - "--listen=:2345"
+      - "--api-version=2"
+      - "--accept-multiclient"
+
+networks:
+  zod-network:
+    driver: bridge

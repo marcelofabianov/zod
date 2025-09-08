@@ -1,0 +1,98 @@
+name: "zod"
+
+services:
+  zod-api:
+    container_name: zod-api
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        HOST_UID: ${HOST_UID:-1000}
+        HOST_GID: ${HOST_GID:-1000}
+    env_file:
+      - .env
+    ports:
+      - "8080:${APP_API_PORT:-8080}"
+    networks:
+      - zod-network
+    working_dir: /app
+    volumes:
+      - .:/app:ro,z
+      - ./tmp:/app/tmp
+    depends_on:
+      zod-db:
+        condition: service_healthy
+      zod-rabbitmq:
+        condition: service_healthy
+      zod-redis:
+        condition: service_healthy
+
+  zod-db:
+    container_name: zod-db
+    restart: always
+    image: "postgres:17-alpine"
+    ports:
+      - "5454:${APP_DB_PORT:-5432}"
+    environment:
+      POSTGRES_USER: ${APP_DB_USER:-username}
+      POSTGRES_PASSWORD: ${APP_DB_PASSWORD:-password}
+      POSTGRES_DB: ${APP_DB_NAME:-zod-db}
+    volumes:
+      - zod-data:/var/lib/postgresql/data:rw
+    networks:
+      - zod-network
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}'"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  zod-rabbitmq:
+    container_name: zod-rabbitmq
+    restart: always
+    image: "rabbitmq:4.1.4-management-alpine"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${APP_RABBITMQ_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${APP_RABBITMQ_PASSWORD:-guest}
+    volumes:
+      - zod-rabbitmq-data:/var/lib/rabbitmq:rw
+    networks:
+      - zod-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_running", "-q"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+
+  zod-redis:
+    container_name: zod-redis
+    restart: always
+    image: "redis:8.0.3-alpine"
+    ports:
+      - "6379:6379"
+    command: --requirepass ${APP_REDIS_PASSWORD:-your-strong-password}
+    volumes:
+      - zod-redis-data:/data:rw
+    networks:
+      - zod-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${APP_REDIS_PASSWORD:-your-strong-password}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  zod-data:
+    driver: local
+  zod-rabbitmq-data:
+    driver: local
+  zod-redis-data:
+    driver: local
+
+networks:
+  zod-network:
+    driver: bridge

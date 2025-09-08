@@ -1,0 +1,5 @@
+### Send a GET request to the root endpoint
+GET http://localhost:8080/
+
+### Health Check
+GET http://localhost:8080/healthz

@@ -1,0 +1,20 @@
+#Ignora o diretório de controle de versão do Git.
+.git
+
+#Ignora arquivos e diretórios de IDEs comuns.
+.vscode/
+.idea/
+
+#Ignora o diretório que contém os arquivos de ambiente "originais".
+_env/
+
+#Ignora o arquivo .env que é gerado dinamicamente e contém configurações locais.
+Este é um passo CRÍTICO para a segurança.
+.env
+
+#Ignora o próprio arquivo .dockerignore e o Makefile.
+.dockerignore
+Makefile
+
+#Ignora arquivos de documentação que não são necessários na imagem final.
+*.md
