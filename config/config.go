@@ -8,19 +8,12 @@ import (
 )
 
 type Config struct {
-	User     UserConfig     `mapstructure:"user"`
 	General  GeneralConfig  `mapstructure:"general"`
 	Logger   LoggerConfig   `mapstructure:"logger"`
 	Server   ServerConfig   `mapstructure:"server"`
 	DB       DBConfig       `mapstructure:"db"`
-	Goose    GooseConfig    `mapstructure:"goose"`
 	RabbitMQ RabbitMQConfig `mapstructure:"rabbitmq"`
 	Redis    RedisConfig    `mapstructure:"redis"`
-}
-
-type UserConfig struct {
-	UID int `mapstructure:"host_uid"`
-	GID int `mapstructure:"host_gid"`
 }
 
 type GeneralConfig struct {
@@ -71,12 +64,6 @@ type DBConfig struct {
 	ExecTimeout     time.Duration `mapstructure:"exectimeout"`
 }
 
-type GooseConfig struct {
-	Driver       string `mapstructure:"driver"`
-	MigrationDir string `mapstructure:"migration_dir"`
-	DBString     string `mapstructure:"dbstring"`
-}
-
 type RabbitMQConfig struct {
 	Host     string `mapstructure:"host"`
 	Port     int    `mapstructure:"port"`
@@ -97,8 +84,6 @@ type RedisConfig struct {
 func LoadConfig(path string) (*Config, error) {
 	v := viper.New()
 
-	v.SetDefault("user.host_uid", 1000)
-	v.SetDefault("user.host_gid", 1000)
 	v.SetDefault("general.env", "development")
 	v.SetDefault("general.tz", "UTC")
 	v.SetDefault("logger.level", "info")
@@ -127,9 +112,6 @@ func LoadConfig(path string) (*Config, error) {
 	v.SetDefault("db.connmaxidletime", "10m")
 	v.SetDefault("db.querytimeout", "5s")
 	v.SetDefault("db.exectimeout", "3s")
-	v.SetDefault("goose.driver", "postgres")
-	v.SetDefault("goose.migration_dir", "./db/migrations")
-	v.SetDefault("goose.dbstring", "")
 	v.SetDefault("rabbitmq.host", "localhost")
 	v.SetDefault("rabbitmq.port", 5672)
 	v.SetDefault("rabbitmq.user", "guest")
